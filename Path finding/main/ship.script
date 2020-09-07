@@ -1,0 +1,26 @@
+function init(self)
+	require "main.find_path"
+	msg.post(".", "acquire_input_focus")
+end
+
+function update(self, dt)
+	go.set_position(go.get_position("ship"))
+end
+
+function on_input(self, action_id, action)
+	if action.pressed then
+		before = socket.gettime()
+		local target = vmath.vector3(action.x, action.y, 0)
+		find_path(go.get_position(), target)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("finded!") then
+		after = socket.gettime()
+		print(unpack(message.way_points))
+		print((after - before)*1000)
+	end
+end
+
+-- coded by Karel Kovarski
