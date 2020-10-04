@@ -72,19 +72,19 @@ function find_path(from, to)
 			elseif angle < 180 then
 				local direction = vmath.normalize(positions[math.floor(math.max(max, min))] - from)
 				table.insert(way_points, from + direction * (lengths[math.floor(math.max(max, min))] - 8))
-				cuntinue_finding(way_points, to)
+				continue_finding(way_points, to)
 				way_points = { from }
 			elseif angle > 180 then
 				local direction = vmath.normalize(positions[math.floor(math.min(max, min))] - from)
 				table.insert(way_points, from + direction * (lengths[math.floor(math.min(max, min))] - 8))
-				cuntinue_finding(way_points, to)
+				continue_finding(way_points, to)
 				way_points = { from }
 			end
 		end
 	end	
 end 
 
-function cuntinue_finding(way_points, to)
+function continue_finding(way_points, to)
 	local start_pos = way_points[#way_points]
 	local length = vmath.length(start_pos - to)
 	local lengths = {}
@@ -171,7 +171,7 @@ function cuntinue_finding(way_points, to)
 					distance = distance + vmath.length(way_points[i-1] - way_points[i])
 				end
 				if final_distance == nil or distance < final_distance then
-					cuntinue_finding(way_points)
+					continue_finding(way_points)
 				end
 			elseif angle > 180 then
 				local direction = vmath.normalize(positions[math.floor(math.min(max, min))] - go.get_position(from))
@@ -181,7 +181,7 @@ function cuntinue_finding(way_points, to)
 					distance = distance + vmath.length(way_points[i-1] - way_points[i])
 				end
 				if final_distance == nil or distance < final_distance then
-					cuntinue_finding(way_points)
+					continue_finding(way_points)
 				end
 			end
 		end
