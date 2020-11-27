@@ -1,6 +1,12 @@
 function find_path(from, to)
+	global_trading = false
+	global_in_target = false
+	global_target_id = nil
+	time = nil
+	final_distance = nil
 	distance = 0
-	from_id = from
+	from_id = go.get_id("mouse")
+	from = go.get_position(from)
 	width = 16
 	local rot = 0
 	local length = vmath.length(from - to)
@@ -30,20 +36,17 @@ function find_path(from, to)
 		if last_length ~= nil then
 			if lengths[#lengths] ~= last_length then
 				if lengths[#lengths] == length then
-					print("clear!")	
 					table.insert(option_angles, rot)
 				elseif last_length >= lengths[#lengths] + width then
-					print("less")
 					table.insert(option_angles, rot - 1)
 				elseif last_length <= lengths[#lengths] - width then
-					print("more")
 					table.insert(option_angles, rot)
 					end
 				end
 			end
 		last_length = lengths[#lengths]
 		rot = rot + 1
-		if rot == 361 then print(unpack(option_angles)) break end
+		if rot == 361 then break end
 	end
 
 	for i = 1, #option_angles do
@@ -70,13 +73,13 @@ function find_path(from, to)
 				msg.post(from_id, "finded!", { way_points = way_points })
 				break
 			elseif angle < 180 then
-				local direction = vmath.normalize(positions[math.floor(math.max(max, min))] - from)
-				table.insert(way_points, from + direction * (lengths[math.floor(math.max(max, min))] - 8))
+				local direction = vmath.normalize(positions[math.floor(math.max(max, min)) + 1] - from)
+				table.insert(way_points, from + direction * (lengths[math.floor(math.max(max, min)) + 1]  - 8))
 				continue_finding(way_points, to)
 				way_points = { from }
 			elseif angle > 180 then
-				local direction = vmath.normalize(positions[math.floor(math.min(max, min))] - from)
-				table.insert(way_points, from + direction * (lengths[math.floor(math.min(max, min))] - 8))
+				local direction = vmath.normalize(positions[math.floor(math.min(max, min)) + 1] - from)
+				table.insert(way_points, from + direction * (lengths[math.floor(math.min(max, min)) + 1] - 8))
 				continue_finding(way_points, to)
 				way_points = { from }
 			end
@@ -115,20 +118,17 @@ function continue_finding(way_points, to)
 		if last_length ~= nil then
 			if lengths[#lengths] ~= last_length then
 				if lengths[#lengths] == length then
-					print("clear!")	
 					table.insert(option_angles, rot)
 				elseif last_length >= lengths[#lengths] + width then
-					print("less")
 					table.insert(option_angles, rot - 1)
 				elseif last_length <= lengths[#lengths] - width then
-					print("more")
 					table.insert(option_angles, rot)
 				end
 			end
 		end
 		last_length = lengths[#lengths]
 		rot = rot + 1
-		if rot == 361 then print(unpack(option_angles)) break end
+		if rot == 361 then break end
 	end
 
 	for i = 1, #option_angles do
@@ -159,29 +159,29 @@ function continue_finding(way_points, to)
 				if final_distance == nil or distance < final_distance then
 					final_distance = distance
 					final_way = way_points
-					msg.post("ship", "finded!", { way_points = way_points })
+					msg.post(from_id, "finded!", { way_points = way_points })
 				end
 				way_points = { go.get_position(".") }
 				break
 			elseif angle < 180 then
-				local direction = vmath.normalize(positions[math.floor(math.max(max, min))] - go.get_position(from))
-				table.insert(way_points, start_pos + direction * (lengths[math.floor(math.max(max, min))] - 8))
+				local direction = vmath.normalize(positions[math.floor(math.max(max, min)) + 1] - go.get_position(from))
+				table.insert(way_points, start_pos + direction * (lengths[math.floor(math.max(max, min)) + 1] - 8))
 				distance = 0
 				for i = 2, #way_points do
 					distance = distance + vmath.length(way_points[i-1] - way_points[i])
 				end
 				if final_distance == nil or distance < final_distance then
-					continue_finding(way_points)
+					continue_finding(way_points, to)
 				end
 			elseif angle > 180 then
-				local direction = vmath.normalize(positions[math.floor(math.min(max, min))] - go.get_position(from))
-				table.insert(way_points, start_pos + direction * (lengths[math.floor(math.max(max, min))] - 8))
+				local direction = vmath.normalize(positions[math.floor(math.min(max, min)) + 1] - go.get_position(from))
+				table.insert(way_points, start_pos + direction * (lengths[math.floor(math.max(max, min)) + 1] - 8))
 				distance = 0
 				for i = 2, #way_points do
 					distance = distance + vmath.length(way_points[i-1] - way_points[i])
 				end
 				if final_distance == nil or distance < final_distance then
-					continue_finding(way_points)
+					continue_finding(way_points, to)
 				end
 			end
 		end
